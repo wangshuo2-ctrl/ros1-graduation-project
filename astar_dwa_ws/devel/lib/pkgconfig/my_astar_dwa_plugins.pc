@@ -1,0 +1,8 @@
+prefix=/home/ubuntu2004/astar_dwa_ws/devel
+
+Name: my_astar_dwa_plugins
+Description: Description of my_astar_dwa_plugins
+Version: 0.0.0
+Cflags: -I/home/ubuntu2004/astar_dwa_ws/src/my_astar_dwa_plugins/include
+Libs: -L${prefix}/lib -lmy_astar_dwa_plugins
+Requires: nav_core costmap_2d tf roscpp pluginlib std_msgs geometry_msgs nav_msgs visualization_msgs angles tf2_ros tf2_geometry_msgs tf2

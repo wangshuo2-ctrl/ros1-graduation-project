@@ -1,0 +1,6 @@
+ImprovedAStarGlobalPlanner:
+  # A*算法参数配置（与原导航文件一致）
+  obstacle_threshold: 0.65      # 障碍物阈值
+  inflate_radius: 8             # 障碍物膨胀半径
+  safety_margin: 0.4            # 安全边界
+  heuristic_weight: 1.0         # 启发式权重

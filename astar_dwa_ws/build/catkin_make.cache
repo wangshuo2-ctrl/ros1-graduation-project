@@ -1,0 +1,2 @@
+my_astar_dwa_plugins
+-DCATKIN_DEVEL_PREFIX=/home/ubuntu2004/astar_dwa_ws/devel -DCMAKE_INSTALL_PREFIX=/home/ubuntu2004/astar_dwa_ws/install -G Unix Makefiles

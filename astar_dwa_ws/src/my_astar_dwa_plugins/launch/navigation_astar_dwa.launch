@@ -1,0 +1,23 @@
+<launch>
+  <!-- 设置ROS主节点 -->
+  <arg name="robot_ip" default="192.168.31.200" />
+  <env name="ROS_MASTER_URI" value="http://$(arg robot_ip):11311" />
+  
+  <!-- 加载插件参数 -->
+  <rosparam file="$(find my_astar_dwa_plugins)/config/astar_params.yaml" command="load" />
+  <rosparam file="$(find my_astar_dwa_plugins)/config/dwa_params.yaml" command="load" />
+  
+  <!-- 启动move_base，使用改进的A*和DWA插件 -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <!-- 指定全局规划器插件 -->
+    <param name="base_global_planner" value="my_astar_dwa_plugins/ImprovedAStarGlobalPlanner"/>
+    <!-- 指定局部规划器插件 -->
+    <param name="base_local_planner" value="my_astar_dwa_plugins/ImprovedDWALocalPlanner"/>
+    
+    <!-- 加载通用参数（从原导航系统复制） -->
+    <rosparam file="$(find dashgo_nav)/params/my_costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find dashgo_nav)/params/my_costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find dashgo_nav)/params/my_local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find dashgo_nav)/params/my_global_costmap_params.yaml" command="load" />
+  </node>
+</launch>

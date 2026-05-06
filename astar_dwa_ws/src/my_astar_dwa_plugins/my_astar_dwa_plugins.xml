@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<library path="lib/libmy_astar_dwa_plugins">
+  <!-- Improved A* Global Planner -->
+  <class name="my_astar_dwa_plugins/ImprovedAStarGlobalPlanner"
+         type="my_astar_dwa_plugins::ImprovedAStarGlobalPlanner"
+         base_class_type="nav_core::BaseGlobalPlanner">
+    <description>
+      Improved A* global planner with obstacle inflation and path smoothing
+    </description>
+  </class>
+  
+  <!-- Improved DWA Local Planner -->
+  <class name="my_astar_dwa_plugins/ImprovedDWALocalPlanner"
+         type="my_astar_dwa_plugins::ImprovedDWALocalPlanner"
+         base_class_type="nav_core::BaseLocalPlanner">
+    <description>
+      Improved DWA local planner with adaptive velocity control and global heading evaluation
+    </description>
+  </class>
+</library>
