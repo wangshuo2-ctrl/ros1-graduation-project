@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- 强制使用预加载地图模式 -->
+    <arg name="map_mode" default="1" doc="1=预加载地图模式（仅使用maps文件夹中的地图）"/>
+    <arg name="preload_map_path" default="$(find pathplanning)/maps/new_map_name.yaml"/>
+    
+    <!-- 参数设置 -->
+    <arg name="rviz_config" default="$(find pathplanning)/rviz/astar.rviz"/>
+    
+    <!-- 设置环境变量 -->
+    <env name="ROS_MASTER_URI" value="http://localhost:11311" />
+    <env name="ROS_IP" value="localhost" />
+    <env name="ROSCONSOLE_CONFIG_FILE" value="$(find pathplanning)/config/logging.config"/>
+    <env name="ROSCONSOLE_MIN_SEVERITY" value="WARN"/>
+    
+    <!-- 启动地图服务器（仅预加载地图） -->
+    <node name="map_server" pkg="map_server" type="map_server" 
+          args="$(arg preload_map_path)" output="screen" respawn="true">
+        <param name="frame_id" value="map"/>
+        <remap from="map" to="/map"/>
+    </node>
+    
+    <!-- 发布静态TF变换 -->
+    <node pkg="tf" type="static_transform_publisher" name="map_to_odom"
+          args="0 0 0 0 0 0 1 map odom 100" output="log"/>
+    
+    <!-- 启动A*+DWA集成导航系统 -->
+    <node name="astar_dwa_navigation" pkg="pathplanning" type="astar_dwa_navigation" output="screen">
+        <rosparam file="$(find pathplanning)/config/astar_params.yaml" command="load"/>
+        <rosparam file="$(find pathplanning)/config/dwa_params.yaml" command="load"/>
+        <!-- 强制使用预加载地图模式 -->
+        <param name="map_mode" value="$(arg map_mode)"/>
+        <param name="preload_map_path" value="$(arg preload_map_path)"/>
+    </node>
+    
+    <!-- RViz可视化 -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config)" output="log"/>
+</launch>

@@ -1,0 +1,11 @@
+# 双地图模式配置 - 修改为仅使用预加载地图
+# 地图模式: 1=预加载地图模式（禁用交互式编辑器）
+map_mode: 1
+
+# 预加载地图路径
+preload_map_path: "$(find pathplanning)/maps/new_map_name.yaml"
+
+# 预加载地图参数
+preload:
+  map_topic: "/map"
+  enabled: true

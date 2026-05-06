@@ -1,0 +1,12 @@
+# AB 改进A*算法参数
+heuristic_weight: 1.0
+inflate_radius: 5
+safety_margin: 0.3
+obstacle_clearance: 0.3
+turn_penalty_weight: 0.3
+euclidean: true
+allow_outside_map: false
+max_iterations: 20000
+enable_path_smoothing: true
+enable_bspline_smoothing: true
+enable_path_resample: true

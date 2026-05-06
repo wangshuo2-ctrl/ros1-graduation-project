@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- 完整的一体化系统启动文件 -->
+    <!-- 包含导航系统、RViz和GUI -->
+    
+    <!-- 参数设置 -->
+    <arg name="map_path" default="$(find pathplanning)/maps/new_map_name.yaml"/>
+    <arg name="rviz_config" default="$(find pathplanning)/rviz/astar_new.rviz"/>
+    
+    <!-- 启动地图服务器 -->
+    <node name="map_server" pkg="map_server" type="map_server" 
+          args="$(arg map_path)" output="screen">
+        <param name="frame_id" value="map"/>
+        <remap from="map" to="/original_map"/>
+    </node>
+    
+    <!-- 启动随机障碍物发布节点 -->
+    <node name="random_obstacle_publisher" pkg="pathplanning" 
+          type="random_obstacle_publisher" output="screen">
+        <param name="obstacle_count" value="5"/>
+        <param name="obstacle_radius" value="0.3"/>
+        <param name="obstacle_cost_value" value="100"/>
+        <param name="update_rate" value="10.0"/>
+        <param name="enable_random_movement" value="false"/>
+    </node>
+    
+    <!-- 启动TF变换 -->
+    <node pkg="tf" type="static_transform_publisher" name="map_to_odom"
+          args="0 0 0 0 0 0 1 map odom 100"/>
+    
+    <!-- 启动改进A*+DWA导航系统 -->
+    <node name="astar_dwa_navigation" pkg="pathplanning" type="astar_dwa_navigation" output="screen">
+        <!-- 加载参数文件 -->
+        <rosparam file="$(find pathplanning)/config/astar_params.yaml" command="load"/>
+        <rosparam file="$(find pathplanning)/config/dwa_params.yaml" command="load"/>
+        
+        <!-- 基本参数 -->
+        <param name="enable_continuous_planning" value="true"/>
+        <param name="allow_outside_map_points" value="true"/>
+        <param name="max_search_radius" value="10"/>
+        <param name="debug_mode" value="false"/>
+        <param name="use_simulated_odom" value="true"/>
+        
+        <!-- 关键：订阅包含障碍物的地图 -->
+        <remap from="/map" to="/random_obstacle_map"/>
+    </node>
+    
+    <!-- 启动RViz可视化界面 -->
+    <node name="rviz" pkg="rviz" type="rviz" 
+          args="-d $(arg rviz_config)" output="screen" respawn="true"/>
+    
+    <!-- 启动GUI控制面板（延迟3秒，确保ROS服务就绪） -->
+    <node name="obstacle_gui" pkg="pathplanning" type="obstacle_control_simple.py" 
+          output="screen" respawn="true" launch-prefix="bash -c 'sleep 3; $0 $@'"/>
+</launch>

@@ -1,0 +1,40 @@
+# A*算法参数配置
+astar:
+  # 障碍物膨胀半径
+  inflate_radius: 5
+  # 安全边界
+  safety_margin: 0.3
+  # 启发式权重
+  heuristic_weight: 1.0
+  # 使用欧几里得距离
+  euclidean: true
+  # 最大迭代次数
+  max_iterations: 20000
+  # 启用路径平滑
+  enable_path_smoothing: true
+  # 最小规划间隔
+  min_planning_interval: 0.5
+  # 转向惩罚权重
+  turn_penalty_weight: 0.3
+  # 碰撞检查半径
+  collision_check_radius: 3
+  # 允许地图外的点
+  allow_outside_map: true
+  
+  # 高级路径平滑参数
+  enable_path_smoothing_advanced: true   # 启用高级路径平滑
+  smooth_algorithm: 0                    # 平滑算法: 0=梯度下降, 1=贝塞尔, 2=三次样条
+  smooth_iterations: 5                   # 平滑迭代次数
+  smooth_weight: 0.3                     # 平滑权重
+  tolerance: 0.1                         # 平滑容差
+  
+  # B样条平滑参数
+  enable_bspline_smoothing: true         # 启用B样条平滑
+  bspline_degree: 3                      # B样条阶数
+  bspline_samples: 300                   # 采样点数
+  bspline_smoothness: 0.9                # 平滑度
+  
+  # 路径重采样参数
+  enable_path_resample: true             # 启用路径重采样
+  resample_points: 200                   # 重采样点数
+resample_step: 0.1                     # 重采样步长

@@ -1,0 +1,23 @@
+<launch>
+    <!-- 简单A*路径规划系统 -->
+    
+    <!-- 交互式地图编辑器 -->
+    <node name="interactive_map_editor" pkg="pathplanning" type="interactive_map_editor" output="screen" />
+    
+    <!-- A*节点 - 使用简单8方向A* -->
+    <node name="ctAstar_ros_node" pkg="pathplanning" type="ctAstar_ros_node" output="screen">
+        <!-- 参数 -->
+        <param name="euclidean" value="true" />
+        <param name="auto_heuristic" value="false" />
+        <param name="inflate_radius" value="0" />  <!-- 设为0，无膨胀 -->
+        <param name="heuristic_weight" value="1.0" />
+        <param name="min_planning_interval" value="0.5" />
+    </node>
+    
+    <!-- 静态TF广播 -->
+    <node pkg="tf" type="static_transform_publisher" name="map_to_odom_broadcaster" 
+          args="0 0 0 0 0 0 map odom 100" />
+    
+    <!-- 启动RViz -->
+    <node name="rviz" pkg="rviz" type="rviz" output="screen" />
+</launch>

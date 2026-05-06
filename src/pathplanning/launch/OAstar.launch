@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- OA*路径规划启动文件 -->
+    <!-- 此启动文件用于启动忽略动态障碍物的OA*算法 -->
+    
+    <!-- 参数设置 -->
+    <arg name="map_path" default="$(find pathplanning)/maps/new_map_name.yaml"/>
+    <arg name="rviz_config" default="$(find pathplanning)/rviz/astar_new.rviz"/>
+    
+    <!-- 启动地图服务器 -->
+    <node name="map_server" pkg="map_server" type="map_server" 
+          args="$(arg map_path)" output="screen">
+        <param name="frame_id" value="map"/>
+        <!-- 发布原始地图到/original_map -->
+        <remap from="map" to="/original_map"/>
+    </node>
+    
+    <!-- 启动随机障碍物发布节点 -->
+    <node name="random_obstacle_publisher" pkg="pathplanning" 
+          type="random_obstacle_publisher" output="screen">
+        <param name="obstacle_count" value="3"/>  <!-- 障碍物数量 -->
+        <param name="obstacle_radius" value="0.2"/>  <!-- 障碍物半径 -->
+        <param name="obstacle_cost_value" value="100"/>  <!-- 障碍物成本值 -->
+        <param name="update_rate" value="5.0"/>  <!-- 更新频率 -->
+        <param name="enable_random_movement" value="false"/>  <!-- 禁用随机移动 -->
+    </node>
+    
+    <!-- 启动TF变换 -->
+    <node pkg="tf" type="static_transform_publisher" name="map_to_odom"
+          args="0 0 0 0 0 0 1 map odom 100"/>
+    
+    <!-- 启动OA*节点 -->
+    <node name="oastar_global_planner" pkg="pathplanning" 
+          type="oastar_ros_node" output="screen">
+        
+        <!-- 基础搜索参数 -->
+        <param name="heuristic_weight" value="1.0"/>
+        <param name="inflate_radius" value="3"/>  <!-- 膨胀半径 -->
+        <param name="safety_margin" value="0.2"/>  <!-- 安全边距 -->
+        <param name="obstacle_clearance" value="0.2"/>  <!-- 障碍物清除距离 -->
+        <param name="max_iterations" value="50000"/>  <!-- 最大迭代次数 -->
+        <param name="max_search_radius" value="100"/>  <!-- 最大搜索半径 -->
+        
+        <!-- 禁用所有平滑和复杂功能，先确保基础A*能工作 -->
+        <param name="enable_path_smoothing" value="false"/>
+        <param name="enable_bspline_smoothing" value="false"/>
+        <param name="enable_path_resample" value="false"/>
+        <param name="enable_safety_check" value="false"/>  <!-- 先禁用安全检查 -->
+        <param name="enable_constrained_smoothing" value="false"/>
+        <param name="enable_curvature_constraint" value="false"/>
+        
+        <!-- 基础参数 -->
+        <param name="euclidean" value="true"/>
+        <param name="allow_outside_map" value="true"/>  <!-- 允许地图外调整 -->
+        <param name="turn_penalty_weight" value="0.0"/>  <!-- 无转向惩罚 -->
+        <param name="obstacle_threshold" value="0.8"/>  <!-- 提高障碍物阈值 -->
+        
+        <!-- OA*核心参数 -->
+        <param name="ignore_dynamic_obstacles" value="true"/>  <!-- 忽略动态障碍物 -->
+        <param name="lock_original_map" value="true"/>  <!-- 锁定原始地图 -->
+    </node>
+    
+    <!-- 启动RViz -->
+    <node name="rviz" pkg="rviz" type="rviz" 
+          args="-d $(arg rviz_config)" output="screen" respawn="true"/>
+    
+    <!-- 启动GUI -->
+    <node name="obstacle_gui" pkg="pathplanning" type="obstacle_control_simple.py" 
+          output="screen" respawn="true" launch-prefix="bash -c 'sleep 3; $0 $@'"/>
+</launch>

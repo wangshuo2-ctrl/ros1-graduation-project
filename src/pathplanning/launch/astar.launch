@@ -1,0 +1,28 @@
+<launch>
+    <!-- A*路径规划系统 - 纯手动配置版本 -->
+    
+    <!-- 交互式地图编辑器 -->
+    <node name="interactive_map_editor" pkg="pathplanning" type="interactive_map_editor" output="screen" />
+    
+    <!-- A*路径规划节点 -->
+    <node name="astar_ros_node" pkg="pathplanning" type="astar_ros_node" output="screen">
+        <!-- 参数 -->
+        <param name="euclidean" value="true" />
+        <param name="auto_heuristic" value="true" />
+        <param name="inflate_radius" value="3" />
+        <param name="heuristic_weight" value="1.0" />
+        <param name="min_planning_interval" value="0.5" />
+    </node>
+    
+    <!-- 静态TF广播 -->
+    <node pkg="tf" type="static_transform_publisher" name="map_to_odom_broadcaster" 
+          args="0 0 0 0 0 0 map odom 100" />
+    
+    <!-- 启动空白RViz（不加载任何预配置） -->
+    <node name="rviz" pkg="rviz" type="rviz" output="screen">
+        <!-- 关键：不指定-d参数，启动完全空白的RViz -->
+        <!-- 可选：设置一些环境变量优化显示 -->
+        <env name="QT_AUTO_SCREEN_SCALE_FACTOR" value="0"/>
+        <env name="QT_SCALE_FACTOR" value="1.0"/>
+    </node>
+</launch>

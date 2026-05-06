@@ -1,0 +1,36 @@
+<launch>
+    <!-- 参数设置 -->
+    <arg name="rviz_config" default="$(find pathplanning)/rviz/astar_new.rviz"/>
+    <arg name="map_path" default="$(find pathplanning)/maps/new_map_name.yaml"/>
+    <arg name="debug" default="false"/>
+    <arg name="visualize" default="true"/>
+    
+    <!-- 启动地图服务器 -->
+    <node name="map_server" pkg="map_server" type="map_server" 
+          args="$(arg map_path)" output="screen" respawn="true">
+        <param name="frame_id" value="map"/>
+        <remap from="map" to="/map"/>
+    </node>
+    
+    <!-- 启动TF变换 -->
+    <node pkg="tf" type="static_transform_publisher" name="map_to_odom"
+          args="0 0 0 0 0 0 1 map odom 100" output="log"/>
+    
+    <!-- 启动A*+DWA导航系统 -->
+    <node name="astar_dwa_navigation" pkg="pathplanning" type="astar_dwa_navigation" output="screen">
+        <rosparam file="$(find pathplanning)/config/astar_params.yaml" command="load"/>
+        <rosparam file="$(find pathplanning)/config/dwa_params.yaml" command="load"/>
+        <param name="enable_continuous_planning" value="true"/>
+        <param name="allow_outside_map_points" value="true"/>
+        <param name="max_search_radius" value="10"/>
+        <param name="debug_mode" value="$(arg debug)"/>
+        <param name="use_simulated_odom" value="true"/>  <!-- 启用模拟里程计 -->
+    </node>
+    
+    <!-- 启动RViz可视化（可选） -->
+    <group if="$(arg visualize)">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config)" output="log" respawn="true">
+            <param name="splash_screen" value="false"/>
+        </node>
+    </group>
+</launch>

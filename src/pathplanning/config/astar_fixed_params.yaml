@@ -1,0 +1,16 @@
+# astar_fixed_params.yaml
+astar:
+  # 基础参数
+  heuristic_weight: 1.0
+  planning_frequency: 2.0
+  max_iterations: 100000
+  
+  # 障碍物处理 - 关键修复
+  inflate_radius: 3           # 减小膨胀半径
+  safety_margin: 0.2          # 减小安全边距
+  
+  # 路径优化
+  enable_path_smoothing: true
+  euclidean: true
+  auto_heuristic: false
+  occupy_thresh: -1
